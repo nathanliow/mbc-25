@@ -72,6 +72,8 @@ export default function WalletPage() {
             token="SOL"
             isShielded={true}
             usdValue="1,250.00"
+            publicBalance="2.5"
+            privateBalance="10.0"
           />
           <ActionButtons onSend={() => setIsSendDrawerOpen(true)} />
         </div>
