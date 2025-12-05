@@ -88,7 +88,7 @@ export function addPrivateToken(mint: string, decimals: number): void {
   config.decimals[mint] = decimals;
   
   setPrivateTokenConfig(config);
-  console.log(`[PrivateTokenConfig] Added token ${mint} with ${decimals} decimals`);
+  // console.log(`[PrivateTokenConfig] Added token ${mint} with ${decimals} decimals`);
 }
 
 /**

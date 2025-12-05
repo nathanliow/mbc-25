@@ -43,6 +43,8 @@ export interface PredictionMarketEventFilter {
   endDateMax?: Date;
   search?: string;
   locationNotNull?: boolean;
+  locationEquals?: string;
+  locationNotEquals?: string;
 }
 
 export interface PredictionMarketEventListOptions {

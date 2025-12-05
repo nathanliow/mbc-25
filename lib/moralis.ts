@@ -61,7 +61,7 @@ export async function getTokenPairs(
   network: "mainnet" | "devnet" = "mainnet",
   limit: number = 25
 ): Promise<TokenPair[]> {
-  console.log("[Moralis] getTokenPairs called", { tokenAddress, network, limit, hasApiKey: !!MORALIS_API_KEY });
+  // console.log("[Moralis] getTokenPairs called", { tokenAddress, network, limit, hasApiKey: !!MORALIS_API_KEY });
   
   if (!MORALIS_API_KEY || MORALIS_API_KEY.trim() === "") {
     console.warn("[Moralis] API key not configured. Token pairs unavailable.");
@@ -69,7 +69,7 @@ export async function getTokenPairs(
   }
 
   const url = `${MORALIS_BASE_URL}/token/${network}/${tokenAddress}/pairs?limit=${limit}`;
-  console.log("[Moralis] Fetching token pairs from:", url);
+  // console.log("[Moralis] Fetching token pairs from:", url);
 
   try {
     const response = await fetch(url, {
@@ -80,7 +80,7 @@ export async function getTokenPairs(
       },
     });
 
-    console.log("[Moralis] Token pairs response status:", response.status);
+    // console.log("[Moralis] Token pairs response status:", response.status);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -89,7 +89,7 @@ export async function getTokenPairs(
     }
 
     const data = await response.json();
-    console.log("[Moralis] Token pairs data:", data);
+    // console.log("[Moralis] Token pairs data:", data);
     // Moralis returns { pairs: [...] } not { result: [...] }
     return data.pairs || [];
   } catch (error) {
@@ -103,7 +103,7 @@ export async function getTokenPairs(
  * @param pairAddress - The pair address
  * @param fromDate - Start date in ISO format (e.g., "2025-08-01T00:00:00Z")
  * @param toDate - End date in ISO format (e.g., "2025-08-10T00:00:00Z")
- * @param timeframe - Timeframe (1m, 5m, 15m, 30m, 1h, 4h, 1d), defaults to "1h"
+ * @param timeframe - Timeframe (1m, 5m, 15m, 30m, 1h, 4h, 6h, 1d), defaults to "1h"
  * @param currency - Currency for prices (usd, eur, etc.), defaults to "usd"
  * @param limit - Maximum number of data points, defaults to 100
  * @param network - Network (mainnet or devnet), defaults to mainnet
@@ -113,12 +113,12 @@ export async function getOHLCVData(
   pairAddress: string,
   fromDate: string,
   toDate: string,
-  timeframe: "1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "1d" = "1h",
+  timeframe: "1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "6h" | "1d" = "1h",
   currency: string = "usd",
   limit: number = 100,
   network: "mainnet" | "devnet" = "mainnet"
 ): Promise<OHLCVData[]> {
-  console.log("[Moralis] getOHLCVData called", { pairAddress, fromDate, toDate, timeframe, hasApiKey: !!MORALIS_API_KEY });
+  // console.log("[Moralis] getOHLCVData called", { pairAddress, fromDate, toDate, timeframe, hasApiKey: !!MORALIS_API_KEY });
   
   if (!MORALIS_API_KEY || MORALIS_API_KEY.trim() === "") {
     console.warn("[Moralis] API key not configured. OHLCV data unavailable.");
@@ -131,7 +131,7 @@ export async function getOHLCVData(
     const encodedToDate = encodeURIComponent(toDate);
 
     const url = `${MORALIS_BASE_URL}/token/${network}/pairs/${pairAddress}/ohlcv?fromDate=${encodedFromDate}&toDate=${encodedToDate}&timeframe=${timeframe}&currency=${currency}&limit=${limit}`;
-    console.log("[Moralis] Fetching OHLCV data from:", url);
+    // console.log("[Moralis] Fetching OHLCV data from:", url);
 
     const response = await fetch(url, {
       method: "GET",
@@ -141,7 +141,7 @@ export async function getOHLCVData(
       },
     });
 
-    console.log("[Moralis] OHLCV response status:", response.status);
+    // console.log("[Moralis] OHLCV response status:", response.status);
 
     if (!response.ok) {
       const errorText = await response.text();
@@ -162,7 +162,7 @@ export async function getOHLCVData(
  * Get OHLCV data for the last N days
  * @param pairAddress - The pair address
  * @param days - Number of days to look back, defaults to 7
- * @param timeframe - Timeframe for data points, defaults to "1h"
+ * @param timeframe - Timeframe for data points, defaults to "1h" (supports 1m, 5m, 15m, 30m, 1h, 4h, 6h, 1d)
  * @param currency - Currency for prices, defaults to "usd"
  * @param limit - Maximum number of data points, defaults to 100
  * @param network - Network (mainnet or devnet), defaults to mainnet
@@ -171,7 +171,7 @@ export async function getOHLCVData(
 export async function getOHLCVDataLastNDays(
   pairAddress: string,
   days: number = 7,
-  timeframe: "1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "1d" = "1h",
+  timeframe: "1m" | "5m" | "15m" | "30m" | "1h" | "4h" | "6h" | "1d" = "1h",
   currency: string = "usd",
   limit: number = 100,
   network: "mainnet" | "devnet" = "mainnet"
@@ -204,12 +204,12 @@ export async function getMostLiquidPair(
   tokenAddress: string,
   network: "mainnet" | "devnet" = "mainnet"
 ): Promise<TokenPair | null> {
-  console.log("[Moralis] getMostLiquidPair called", { tokenAddress, network });
+  // console.log("[Moralis] getMostLiquidPair called", { tokenAddress, network });
   const pairs = await getTokenPairs(tokenAddress, network, 25);
-  console.log("[Moralis] getMostLiquidPair - pairs received:", pairs.length);
+  // console.log("[Moralis] getMostLiquidPair - pairs received:", pairs.length);
   
   if (pairs.length === 0) {
-    console.log("[Moralis] getMostLiquidPair - no pairs found");
+    // console.log("[Moralis] getMostLiquidPair - no pairs found");
     return null;
   }
 
@@ -220,7 +220,7 @@ export async function getMostLiquidPair(
     return liquidityB - liquidityA;
   });
 
-  console.log("[Moralis] getMostLiquidPair - selected pair:", sortedPairs[0]);
+  // console.log("[Moralis] getMostLiquidPair - selected pair:", sortedPairs[0]);
   return sortedPairs[0];
 }
 

@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log("[Encifher] Getting order status:", orderStatusIdentifier);
+    // console.log("[Encifher] Getting order status:", orderStatusIdentifier);
 
     const config: DefiClientConfig = {
       encifherKey: ENCIFHER_API_KEY,
@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
       orderStatusIdentifier,
     });
 
-    console.log("[Encifher] Order status:", status);
+    // console.log("[Encifher] Order status:", status);
 
     return NextResponse.json({ status });
   } catch (error: any) {

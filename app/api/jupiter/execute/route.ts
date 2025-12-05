@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log("[Jupiter] Executing swap with requestId:", requestId);
+    // console.log("[Jupiter] Executing swap with requestId:", requestId);
 
     const res = await fetch(JUPITER_ULTRA_EXECUTE_URL, {
       method: "POST",
@@ -38,8 +38,8 @@ export async function POST(request: NextRequest) {
     });
 
     const responseText = await res.text();
-    console.log("[Jupiter] Execute response status:", res.status, res.statusText);
-    console.log("[Jupiter] Execute response body:", responseText);
+    // console.log("[Jupiter] Execute response status:", res.status, res.statusText);
+    // console.log("[Jupiter] Execute response body:", responseText);
 
     if (!res.ok) {
       console.error("[Jupiter] Execute error:", res.status, res.statusText, responseText);

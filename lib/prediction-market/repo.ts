@@ -178,6 +178,12 @@ export class PredictionMarketRepo {
       if (filters.locationNotNull) {
         query = query.not("location", "is", null).neq("location", "");
       }
+      if (filters.locationEquals) {
+        query = query.eq("location", filters.locationEquals);
+      }
+      if (filters.locationNotEquals) {
+        query = query.neq("location", filters.locationNotEquals).not("location", "is", null);
+      }
     }
 
     const { count, error } = await query;
@@ -187,14 +193,18 @@ export class PredictionMarketRepo {
                           (error as any).error_description || 
                           (error as any).msg ||
                           "Database count query failed";
-      const errorDetails = {
-        message: errorMessage,
-        details: (error as any).details || error.details,
-        hint: (error as any).hint || error.hint,
-        code: (error as any).code || error.code,
-        fullError: error,
-      };
-      console.error("[PredictionMarketRepo] Count error:", errorDetails);
+      
+      // Only log if there's actual error information, otherwise it's likely a timeout/expected failure
+      if (error.message || (error as any).code || (error as any).details) {
+        const errorDetails = {
+          message: errorMessage,
+          details: (error as any).details || error.details,
+          hint: (error as any).hint || error.hint,
+          code: (error as any).code || error.code,
+          fullError: error,
+        };
+        // console.warn("[PredictionMarketRepo] Count query failed (will use estimated total):", errorDetails);
+      }
       
       if (error.code === '57014') {
         throw new Error("Count query timeout");

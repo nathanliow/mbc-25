@@ -23,7 +23,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log("[Encifher] Getting swap quote:", { inMint, outMint, amountIn });
+    // console.log("[Encifher] Getting swap quote:", { inMint, outMint, amountIn });
 
     const config: DefiClientConfig = {
       encifherKey: ENCIFHER_API_KEY,
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
       amountIn: amountIn.toString(),
     });
 
-    console.log("[Encifher] Swap quote received:", quote);
+    // console.log("[Encifher] Swap quote received:", quote);
 
     return NextResponse.json(quote);
   } catch (error: any) {

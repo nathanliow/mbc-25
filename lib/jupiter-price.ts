@@ -147,18 +147,18 @@ export async function getTokenPrice(
   // Check cache first
   const cachedPrice = getCachedPrice(mintAddress);
   if (cachedPrice !== null) {
-    console.log("[Jupiter] Using cached price for", mintAddress, ":", cachedPrice);
+    // console.log("[Jupiter] Using cached price for", mintAddress, ":", cachedPrice);
     return cachedPrice;
   }
 
   // Fetch from Jupiter
-  console.log("[Jupiter] Fetching price for", mintAddress);
+  // console.log("[Jupiter] Fetching price for", mintAddress);
   const price = await fetchTokenPriceFromJupiter(mintAddress);
   
   if (price !== null) {
     // Cache the price
     setCachedPrice(mintAddress, price);
-    console.log("[Jupiter] Cached price for", mintAddress, ":", price);
+    // console.log("[Jupiter] Cached price for", mintAddress, ":", price);
   }
 
   return price;

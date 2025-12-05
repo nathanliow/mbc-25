@@ -503,7 +503,7 @@ export function WalletProvider({ children }: WalletProviderProps) {
     async (transaction: string, requestId: string): Promise<string> => {
       if (!activeKeypair) throw new Error("Wallet not unlocked");
       
-      console.log("[Wallet] Starting public swap via Jupiter");
+      // console.log("[Wallet] Starting public swap via Jupiter");
       
       // Deserialize the transaction
       const { VersionedTransaction, Transaction } = await import("@solana/web3.js");
@@ -516,13 +516,13 @@ export function WalletProvider({ children }: WalletProviderProps) {
         const versionedTx = VersionedTransaction.deserialize(txBuffer);
         versionedTx.sign([activeKeypair]);
         signedTxBase64 = Buffer.from(versionedTx.serialize()).toString("base64");
-        console.log("[Wallet] Signed versioned transaction");
+        // console.log("[Wallet] Signed versioned transaction");
       } catch (e) {
         // Try legacy Transaction
         const legacyTx = Transaction.from(txBuffer);
         legacyTx.partialSign(activeKeypair);
         signedTxBase64 = legacyTx.serialize().toString("base64");
-        console.log("[Wallet] Signed legacy transaction");
+        // console.log("[Wallet] Signed legacy transaction");
       }
       
       // Execute via Jupiter
@@ -541,7 +541,7 @@ export function WalletProvider({ children }: WalletProviderProps) {
       }
       
       const result = await executeResponse.json();
-      console.log("[Wallet] Jupiter swap result:", result);
+      // console.log("[Wallet] Jupiter swap result:", result);
       
       if (result.error) {
         throw new Error(result.error);

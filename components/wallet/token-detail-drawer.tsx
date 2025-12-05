@@ -156,17 +156,17 @@ export function TokenDetailDrawer({
   // Fetch OHLCV data when token changes (with caching)
   useEffect(() => {
     const fetchChartData = async () => {
-      console.log("[TokenDetailDrawer] fetchChartData called", { 
-        hasToken: !!token, 
-        symbol: token?.symbol,
-        mint: token?.mint, 
-        isOpen 
-      });
+      // console.log("[TokenDetailDrawer] fetchChartData called", { 
+      //   hasToken: !!token, 
+      //   symbol: token?.symbol,
+      //   mint: token?.mint, 
+      //   isOpen 
+      // });
       
       const mintAddress = token?.symbol === "SOL" ? SOL_MINT : token?.mint;
       
       if (!mintAddress || !isOpen) {
-        console.log("[TokenDetailDrawer] Skipping fetch - no mint address or drawer closed", { mintAddress, isOpen });
+        // console.log("[TokenDetailDrawer] Skipping fetch - no mint address or drawer closed", { mintAddress, isOpen });
         setChartData([]);
         return;
       }
@@ -174,51 +174,51 @@ export function TokenDetailDrawer({
       // Check cache first
       const cached = getCachedPriceData(mintAddress);
       if (cached) {
-        console.log("[TokenDetailDrawer] Using cached price data");
+        // console.log("[TokenDetailDrawer] Using cached price data");
         const processedData = processOHLCVData(cached.data);
         setChartData(processedData);
         return;
       }
 
-      console.log("[TokenDetailDrawer] Starting to fetch chart data for mint:", mintAddress);
+      // console.log("[TokenDetailDrawer] Starting to fetch chart data for mint:", mintAddress);
       setIsLoadingChart(true);
       try {
         // Get the most liquid pair for the token
-        console.log("[TokenDetailDrawer] Fetching most liquid pair...");
+        // console.log("[TokenDetailDrawer] Fetching most liquid pair...");
         const pair = await getMostLiquidPair(mintAddress, "mainnet");
-        console.log("[TokenDetailDrawer] Pair result:", pair);
+        // console.log("[TokenDetailDrawer] Pair result:", pair);
         
         if (!pair || !pair.pairAddress) {
-          console.log("[TokenDetailDrawer] No pair found, using empty data");
+          // console.log("[TokenDetailDrawer] No pair found, using empty data");
           setChartData([]);
           return;
         }
 
-        console.log("[TokenDetailDrawer] Fetching OHLCV data for pair:", pair.pairAddress);
-        // Get OHLCV data for the last 7 days with 1 day timeframe
+        // console.log("[TokenDetailDrawer] Fetching OHLCV data for pair:", pair.pairAddress);
+        // Get OHLCV data for the last 7 days with 4 hour timeframe (6 data points per day = 42 total)
         const ohlcvData = await getOHLCVDataLastNDays(
           pair.pairAddress,
           7,
-          "1d",
+          "4h",
           "usd",
-          7,
+          42,
           "mainnet"
         );
-        console.log("[TokenDetailDrawer] OHLCV data received:", ohlcvData);
+        // console.log("[TokenDetailDrawer] OHLCV data received:", ohlcvData);
 
         if (ohlcvData && ohlcvData.length > 0) {
           // Cache the data
           setCachedPriceData(mintAddress, ohlcvData, pair.pairAddress);
           
           const processedData = processOHLCVData(ohlcvData);
-          console.log("[TokenDetailDrawer] Processed chart data:", processedData);
+          // console.log("[TokenDetailDrawer] Processed chart data:", processedData);
           setChartData(processedData);
         } else {
-          console.log("[TokenDetailDrawer] No OHLCV data, using empty chart");
+          // console.log("[TokenDetailDrawer] No OHLCV data, using empty chart");
           setChartData([]);
         }
       } catch (err) {
-        console.error("[TokenDetailDrawer] Failed to fetch OHLCV data:", err);
+        // console.error("[TokenDetailDrawer] Failed to fetch OHLCV data:", err);
         setChartData([]);
       } finally {
         setIsLoadingChart(false);

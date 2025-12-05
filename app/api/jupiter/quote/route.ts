@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { inputMint, outputMint, amount, taker } = body;
 
-    console.log("[Jupiter] Quote request:", { inputMint, outputMint, amount, taker });
+    // console.log("[Jupiter] Quote request:", { inputMint, outputMint, amount, taker });
 
     if (!inputMint || !outputMint || !amount || !taker) {
       return NextResponse.json(
@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
       `&amount=${encodeURIComponent(String(amount))}` +
       `&taker=${encodeURIComponent(taker)}`;
 
-    console.log("[Jupiter] Calling Jupiter API:", url);
+    // console.log("[Jupiter] Calling Jupiter API:", url);
 
     const res = await fetch(url, {
       method: "GET",
@@ -51,8 +51,8 @@ export async function POST(request: NextRequest) {
     });
 
     const responseText = await res.text();
-    console.log("[Jupiter] Response status:", res.status, res.statusText);
-    console.log("[Jupiter] Response body:", responseText);
+    // console.log("[Jupiter] Response status:", res.status, res.statusText);
+    // console.log("[Jupiter] Response body:", responseText);
 
     if (!res.ok) {
       console.error("[Jupiter] Quote API error:", res.status, res.statusText, responseText);

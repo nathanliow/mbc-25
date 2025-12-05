@@ -183,7 +183,7 @@ export function SwapForm() {
   useEffect(() => {
     // Only fetch quote if "from" amount was edited or if it's the initial load
     if (lastEdited === "to") {
-      console.log("[Swap] Skipping quote fetch - 'to' amount was edited");
+      // console.log("[Swap] Skipping quote fetch - 'to' amount was edited");
       return;
     }
 
@@ -191,27 +191,27 @@ export function SwapForm() {
     const currentFromToken = fromToken ?? availableTokens[0] ?? { symbol: "SOL", name: "Solana" };
     const currentToToken = toToken ?? availableTokens[1] ?? availableTokens[0] ?? { symbol: "USDC", name: "USD Coin" };
     
-    console.log("[Swap] useEffect triggered", { 
-      fromToken: currentFromToken, 
-      toToken: currentToToken, 
-      fromAmount, 
-      lastQuoteKey,
-      lastEdited
-    });
+    // console.log("[Swap] useEffect triggered", { 
+    //   fromToken: currentFromToken, 
+    //   toToken: currentToToken, 
+    //   fromAmount, 
+    //   lastQuoteKey,
+    //   lastEdited
+    // });
     
     const fetchQuote = async () => {
-      console.log("[Swap] fetchQuote called", { 
-        fromToken: currentFromToken, 
-        toToken: currentToToken, 
-        fromAmount 
-      });
+      // console.log("[Swap] fetchQuote called", { 
+      //   fromToken: currentFromToken, 
+      //   toToken: currentToToken, 
+      //   fromAmount 
+      // });
 
       if (!currentFromToken || !currentToToken) {
-        console.log("[Swap] Missing tokens, skipping quote");
+        // console.log("[Swap] Missing tokens, skipping quote");
         return;
       }
       if (!fromAmount) {
-        console.log("[Swap] Missing amount, skipping quote");
+        // console.log("[Swap] Missing amount, skipping quote");
         return;
       }
 
@@ -221,29 +221,29 @@ export function SwapForm() {
       const fromDecimals = currentFromToken.decimals;
       const toDecimals = currentToToken.decimals;
 
-      console.log("[Swap] Token configs", { 
-        fromMint, 
-        toMint, 
-        fromDecimals,
-        toDecimals,
-        fromSymbol: currentFromToken.symbol, 
-        toSymbol: currentToToken.symbol 
-      });
+      // console.log("[Swap] Token configs", { 
+      //   fromMint, 
+      //   toMint, 
+      //   fromDecimals,
+      //   toDecimals,
+      //   fromSymbol: currentFromToken.symbol, 
+      //   toSymbol: currentToToken.symbol 
+      // });
       
       if (!fromMint || !toMint || !fromDecimals || !toDecimals) {
-        console.log("[Swap] Missing mint or decimals, skipping quote");
+        // console.log("[Swap] Missing mint or decimals, skipping quote");
         return;
       }
 
       // Don't fetch quote if swapping same token
       if (fromMint === toMint) {
-        console.log("[Swap] Same token swap, skipping quote");
+        // console.log("[Swap] Same token swap, skipping quote");
         return;
       }
 
       const amount = parseFloat(fromAmount);
       if (!Number.isFinite(amount) || amount <= 0) {
-        console.log("[Swap] Invalid amount", amount);
+        // console.log("[Swap] Invalid amount", amount);
         return;
       }
 
@@ -251,13 +251,13 @@ export function SwapForm() {
         amount * Math.pow(10, fromDecimals)
       );
       if (amountIn <= 0) {
-        console.log("[Swap] amountIn too small", amountIn);
+        // console.log("[Swap] amountIn too small", amountIn);
         return;
       }
 
       const key = `${fromMint}-${toMint}-${amountIn}`;
       if (key === lastQuoteKey) {
-        console.log("[Swap] Already fetched for this combo", key);
+        // console.log("[Swap] Already fetched for this combo", key);
         // Don't clear quote data if we already have it for this combo
         return;
       }
@@ -281,12 +281,12 @@ export function SwapForm() {
 
       try {
         setIsQuoteLoading(true);
-        console.log("[Swap] Fetching Jupiter quote for", {
-          inputMint: fromMint,
-          outputMint: toMint,
-          amountIn,
-          taker,
-        });
+        // console.log("[Swap] Fetching Jupiter quote for", {
+        //   inputMint: fromMint,
+        //   outputMint: toMint,
+        //   amountIn,
+        //   taker,
+        // });
         const res = await fetch("/api/jupiter/quote", {
           method: "POST",
           headers: {
@@ -310,7 +310,7 @@ export function SwapForm() {
         }
 
         const data = await res.json();
-        console.log("[Swap] Jupiter quote response:", data);
+        // console.log("[Swap] Jupiter quote response:", data);
 
         // We already know the input amount (amountIn), we need the output amount from response
         // Jupiter Ultra API response format may vary
@@ -334,7 +334,7 @@ export function SwapForm() {
           setToAmount(outAmountUi.toFixed(6));
           setLastEdited(null); // Prevent the exchange rate useEffect from overriding
           
-          console.log("[Swap] Quote rate calculated:", rate, "from", inAmountUi, "to", outAmountUi);
+          // console.log("[Swap] Quote rate calculated:", rate, "from", inAmountUi, "to", outAmountUi);
         } else {
           console.warn("[Swap] Could not extract output amount from Jupiter response. amountIn:", amountIn, "outAmountRaw:", outAmountRaw, "response:", data);
           // Reset lastQuoteKey if we couldn't get a valid quote
@@ -592,7 +592,7 @@ export function SwapForm() {
 
       if (isPrivate) {
         // Private swap using Encifher SDK
-        console.log("[Swap] Starting private swap via Encifher");
+        // console.log("[Swap] Starting private swap via Encifher");
         setSwapStatus("Initiating private swap...");
         
         const sig = await swapPrivately(
@@ -616,11 +616,11 @@ export function SwapForm() {
             }
           }
         );
-        console.log("[Swap] Private swap successful, signature:", sig);
+        // console.log("[Swap] Private swap successful, signature:", sig);
         setSwapStatus("Swap completed!");
       } else {
         // Public swap using Jupiter Ultra API
-        console.log("[Swap] Starting public swap via Jupiter");
+        // console.log("[Swap] Starting public swap via Jupiter");
         
         if (!quoteTransaction || !quoteRequestId) {
           setSwapError("No valid quote available. Please wait for the quote to load.");
@@ -630,7 +630,7 @@ export function SwapForm() {
         setSwapStatus("Signing and executing swap...");
 
         const sig = await swapPublic(quoteTransaction, quoteRequestId);
-        console.log("[Swap] Public swap successful, signature:", sig);
+        // console.log("[Swap] Public swap successful, signature:", sig);
         setSwapStatus("Swap completed!");
       }
 

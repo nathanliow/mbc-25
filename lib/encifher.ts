@@ -55,9 +55,9 @@ export async function getPrivateBalance(keypair: Keypair): Promise<PrivateBalanc
     const { getPrivateTokenMints } = await import("./private-token-config");
     const tokenMints = getPrivateTokenMints();
 
-    console.log("[Encifher] Using token mints from config:", tokenMints);
+    // console.log("[Encifher] Using token mints from config:", tokenMints);
 
-    console.log("[Encifher] Getting message to sign via API route...");
+    // console.log("[Encifher] Getting message to sign via API route...");
     
     // Get message to sign via API route (server-side to avoid CORS)
     const messageResponse = await fetch("/api/encifher/get-message", {
@@ -73,7 +73,7 @@ export async function getPrivateBalance(keypair: Keypair): Promise<PrivateBalanc
     }
 
     const authParams = await messageResponse.json();
-    console.log("[Encifher] Successfully got message to sign");
+    // console.log("[Encifher] Successfully got message to sign");
     
     const messageHash = Buffer.from(authParams.msgHash);
     const nacl = await import("tweetnacl");
@@ -81,7 +81,7 @@ export async function getPrivateBalance(keypair: Keypair): Promise<PrivateBalanc
     // Convert signature to base64 to match Encifher's checkSignature(msg, base64Sig)
     const signature = Buffer.from(sigBuff).toString("base64");
     
-    console.log("[Encifher] Getting balance via API route...");
+    // console.log("[Encifher] Getting balance via API route...");
     // Get balance via API route
     const balanceResponse = await fetch("/api/encifher/get-balance", {
       method: "POST",
@@ -102,8 +102,8 @@ export async function getPrivateBalance(keypair: Keypair): Promise<PrivateBalanc
     }
 
     const balances = await balanceResponse.json();
-    console.log("[Encifher] Raw balances received:", balances);
-    console.log("[Encifher] userBalance (all mints):", balances);
+    // console.log("[Encifher] Raw balances received:", balances);
+    // console.log("[Encifher] userBalance (all mints):", balances);
 
     // balances is an array of objects like [{ [mint]: string }] (BigInt → string)
     // Convert to a map of mint -> balance (in token units)
@@ -115,13 +115,13 @@ export async function getPrivateBalance(keypair: Keypair): Promise<PrivateBalanc
         const decimals = getPrivateTokenDecimals(mint);
         const balance = Number(balanceStr) / Math.pow(10, decimals);
         balanceMap[mint] = balance;
-        console.log(`[Encifher] Private balance for ${mint}: ${balance} (raw: ${balanceStr}, decimals: ${decimals})`);
+        // console.log(`[Encifher] Private balance for ${mint}: ${balance} (raw: ${balanceStr}, decimals: ${decimals})`);
       }
     }
 
     // For backward compatibility, also return SOL balance
     const solBalance = balanceMap[SOL_MINT] || 0;
-    console.log("[Encifher] Private SOL balance:", solBalance, "SOL");
+    // console.log("[Encifher] Private SOL balance:", solBalance, "SOL");
 
     return {
       solBalance,
@@ -204,7 +204,7 @@ export async function depositToPrivate(
         skipPreflight: false,
       });
       await connection.confirmTransaction(signature, "confirmed");
-      console.log("[Encifher] Versioned deposit transaction sent. Signature:", signature);
+      // console.log("[Encifher] Versioned deposit transaction sent. Signature:", signature);
     } else {
       // Regular Transaction uses partialSign() (matches example)
       depositTxn.partialSign(keypair);
@@ -221,13 +221,13 @@ export async function depositToPrivate(
           commitment: "confirmed",
         }
       );
-      console.log("[Encifher] Legacy deposit transaction sent. Signature:", signature);
+      // console.log("[Encifher] Legacy deposit transaction sent. Signature:", signature);
     }
 
     // Add token to private token config on successful deposit
     const { addPrivateToken } = await import("./private-token-config");
     addPrivateToken(tokenMint, decimals);
-    console.log(`[Encifher] Added token ${tokenMint} to private token config after successful deposit`);
+    // console.log(`[Encifher] Added token ${tokenMint} to private token config after successful deposit`);
 
     return signature;
   } catch (error: any) {
@@ -280,10 +280,10 @@ export async function withdrawFromPrivate(
     let withdrawTxn: Transaction | VersionedTransaction;
     try {
       withdrawTxn = VersionedTransaction.deserialize(raw);
-      console.log("[Encifher] Deserialized withdraw transaction as VersionedTransaction");
+      // console.log("[Encifher] Deserialized withdraw transaction as VersionedTransaction");
     } catch {
       withdrawTxn = Transaction.from(raw);
-      console.log("[Encifher] Deserialized withdraw transaction as legacy Transaction");
+      // console.log("[Encifher] Deserialized withdraw transaction as legacy Transaction");
     }
 
     const connection = getConnection();
@@ -300,7 +300,7 @@ export async function withdrawFromPrivate(
         skipPreflight: false,
       });
       await connection.confirmTransaction(signature, "confirmed");
-      console.log("[Encifher] Versioned withdraw transaction sent. Signature:", signature);
+      // console.log("[Encifher] Versioned withdraw transaction sent. Signature:", signature);
       return signature;
     } else {
       // Regular Transaction uses partialSign() (matches example)
@@ -318,7 +318,7 @@ export async function withdrawFromPrivate(
           commitment: "confirmed",
         }
       );
-      console.log("[Encifher] Legacy withdraw transaction sent. Signature:", signature);
+      // console.log("[Encifher] Legacy withdraw transaction sent. Signature:", signature);
       return signature;
     }
   } catch (error: any) {
@@ -402,7 +402,7 @@ export async function swapPrivate(
   onStatusUpdate?: (status: string, attempt: number) => void
 ): Promise<string> {
   try {
-    console.log("[Encifher] Starting private swap:", { fromTokenMint, toTokenMint, amount });
+    // console.log("[Encifher] Starting private swap:", { fromTokenMint, toTokenMint, amount });
 
     // Get swap transaction via API route
     const txResponse = await fetch("/api/encifher/get-swap-tx", {
@@ -423,7 +423,7 @@ export async function swapPrivate(
     }
 
     const { transaction: serializedTxn } = await txResponse.json();
-    console.log("[Encifher] Received swap transaction");
+    // console.log("[Encifher] Received swap transaction");
 
     // Deserialize and sign the transaction locally
     const { Transaction } = await import("@solana/web3.js");
@@ -432,7 +432,7 @@ export async function swapPrivate(
     
     // Sign transaction locally
     swapTxn.partialSign(keypair);
-    console.log("[Encifher] Transaction signed locally");
+    // console.log("[Encifher] Transaction signed locally");
     
     // Serialize signed transaction
     const signedSerializedTxn = swapTxn.serialize().toString("base64");
@@ -459,7 +459,7 @@ export async function swapPrivate(
     }
 
     const executeResult = await executeResponse.json();
-    console.log("[Encifher] Swap executed:", executeResult);
+    // console.log("[Encifher] Swap executed:", executeResult);
 
     // Poll for order status
     const MAX_TRIES = 5;
@@ -476,14 +476,14 @@ export async function swapPrivate(
 
           if (statusResponse.ok) {
             const { status } = await statusResponse.json();
-            console.log(`[Encifher] Attempt ${i + 1}/${MAX_TRIES}, status: ${status}`);
+            // console.log(`[Encifher] Attempt ${i + 1}/${MAX_TRIES}, status: ${status}`);
             
             if (onStatusUpdate) {
               onStatusUpdate(status, i + 1);
             }
 
             if (status === "completed") {
-              console.log("[Encifher] Swap completed");
+              // console.log("[Encifher] Swap completed");
               
               // Add both tokens to private token config on successful swap
               const { addPrivateToken, getPrivateTokenDecimals } = await import("./private-token-config");
@@ -498,7 +498,7 @@ export async function swapPrivate(
               
               addPrivateToken(fromTokenMint, getTokenDecimals(fromTokenMint));
               addPrivateToken(toTokenMint, getTokenDecimals(toTokenMint));
-              console.log("[Encifher] Added swap tokens to private token config:", { fromTokenMint, toTokenMint });
+              // console.log("[Encifher] Added swap tokens to private token config:", { fromTokenMint, toTokenMint });
               
               return executeResult.txHash || "swap_completed";
             } else if (status === "swap_failed") {

@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log("[Encifher] Executing swap:", { orderDetails });
+    // console.log("[Encifher] Executing swap:", { orderDetails });
 
     const config: DefiClientConfig = {
       encifherKey: ENCIFHER_API_KEY,
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    console.log("[Encifher] Swap executed:", executeResult);
+    // console.log("[Encifher] Swap executed:", executeResult);
 
     return NextResponse.json({
       orderStatusIdentifier: executeResult.orderStatusIdentifier,

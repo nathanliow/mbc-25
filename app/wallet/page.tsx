@@ -29,6 +29,7 @@ import {
   getCachedActivityTokenMetaAtom,
   setCachedActivityTokenMetaAtom,
   walletHoldingsAtom,
+  explorerPreferenceAtom,
 } from "@/lib/atoms";
 import {
   getCachedTokenPriceAtom,
@@ -58,6 +59,7 @@ export default function WalletPage() {
   const getCachedActivityTokenMeta = useAtom(getCachedActivityTokenMetaAtom)[0];
   const setCachedActivityTokenMeta = useAtom(setCachedActivityTokenMetaAtom)[1];
   const [, setWalletHoldings] = useAtom(walletHoldingsAtom);
+  const [explorerPreference] = useAtom(explorerPreferenceAtom);
   const [activityTxs, setActivityTxs] = useState<ActivityTransaction[]>([]);
   const [isLoadingActivity, setIsLoadingActivity] = useState(false);
 
@@ -95,14 +97,14 @@ export default function WalletPage() {
       setIsLoadingActivity(true);
       try {
         const signatures = await fetchSignaturesForAddress(publicKey, 1000);
-        console.log(
-          "[Activity] Signatures for",
-          publicKey,
-          "count:",
-          signatures.length,
-          "first 5:",
-          signatures.slice(0, 5).map((s) => s.signature)
-        );
+        // console.log(
+        //   "[Activity] Signatures for",
+        //   publicKey,
+        //   "count:",
+        //   signatures.length,
+        //   "first 5:",
+        //   signatures.slice(0, 5).map((s) => s.signature)
+        // );
         if (!signatures.length) {
           if (!cancelled) setActivityTxs([]);
           return;
@@ -426,7 +428,7 @@ export default function WalletPage() {
   const solToken = {
     symbol: "SOL",
     name: "Solana",
-    balance: solTotalBal.toFixed(2),
+    balance: solTotalBal.toFixed(3),
     usdValue: solUsdValueTotal,
     isShielded: solPrivateBal > 0,
     publicBalance: publicBalance.toFixed(4),
@@ -459,7 +461,7 @@ export default function WalletPage() {
         return {
           symbol: t.symbol,
           name: t.name,
-          balance: totalBal.toFixed(2),
+          balance: totalBal.toFixed(3),
           usdValue,
           isShielded: privateBal > 0,
           publicBalance: t.uiAmount.toFixed(4),
@@ -555,7 +557,11 @@ export default function WalletPage() {
                       : ""
                   }
                   isPrivate={tx.isPrivate}
-                  transactionUrl={`https://orb.helius.dev/tx/${tx.signature}?tab=summary`}
+                  transactionUrl={
+                    explorerPreference === "solscan"
+                      ? `https://solscan.io/tx/${tx.signature}`
+                      : `https://orb.helius.dev/tx/${tx.signature}?tab=summary`
+                  }
                   signature={tx.signature}
                   fromToken={tx.fromToken}
                   fromAmount={tx.fromAmount}

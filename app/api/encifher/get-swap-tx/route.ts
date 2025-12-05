@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    console.log("[Encifher] Getting swap transaction:", { inMint, outMint, amountIn, senderPubkey });
+    // console.log("[Encifher] Getting swap transaction:", { inMint, outMint, amountIn, senderPubkey });
 
     const config: DefiClientConfig = {
       encifherKey: ENCIFHER_API_KEY,
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
     // Serialize transaction to base64
     const serializedTxn = swapTxn.serialize({ requireAllSignatures: false }).toString("base64");
 
-    console.log("[Encifher] Swap transaction created");
+    // console.log("[Encifher] Swap transaction created");
 
     return NextResponse.json({ transaction: serializedTxn });
   } catch (error: any) {

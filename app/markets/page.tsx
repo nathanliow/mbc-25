@@ -14,7 +14,8 @@ import {
   Badge,
   Card,
   Skeleton,
-  MarketDetailDrawer
+  MarketDetailDrawer,
+  Select
 } from "@/components";
 import { usePredictionMarkets } from "@/lib/prediction-market/hook";
 import { PredictionMarketEventSchema } from "@/lib/prediction-market/types";
@@ -160,9 +161,12 @@ function MarketSkeleton() {
   );
 }
 
+type FilterOption = "all" | "united-states" | "international" | "sports" | "politics";
+
 export default function MarketsPage() {
   const [selectedMarket, setSelectedMarket] = useState<PredictionMarketEventSchema | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [filterOption, setFilterOption] = useState<FilterOption>("all");
 
   const options = useMemo(
     () => ({
@@ -180,10 +184,31 @@ export default function MarketsPage() {
     []
   );
 
-  const { events, isLoading, error } = usePredictionMarkets({
+  const { events: allEvents, isLoading, error } = usePredictionMarkets({
     filters,
     options,
   });
+
+  const events = useMemo(() => {
+    if (filterOption === "all") {
+      return allEvents;
+    }
+
+    return allEvents.filter((event) => {
+      switch (filterOption) {
+        case "united-states":
+          return event.location === "United States of America";
+        case "international":
+          return event.location && event.location !== "United States of America";
+        case "sports":
+          return event.tags?.includes("Sports") ?? false;
+        case "politics":
+          return event.tags?.includes("Politics") ?? false;
+        default:
+          return true;
+      }
+    });
+  }, [allEvents, filterOption]);
 
   const handleMarketClick = (market: PredictionMarketEventSchema) => {
     setSelectedMarket(market);
@@ -197,11 +222,24 @@ export default function MarketsPage() {
 
   return (
     <div className="container mx-auto px-4 py-6 space-y-4 max-w-md pb-24">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between mb-4">
         <h1 className="text-xl font-bold">Markets</h1>
-        <Badge variant="outline" className="text-xs text-gray-400">
-          Top by Volume
-        </Badge>
+        <div className="flex items-center gap-2">
+          <Select
+            value={filterOption}
+            onChange={(e) => setFilterOption(e.target.value as FilterOption)}
+            className="text-xs h-8 w-32"
+          >
+            <option value="all">All</option>
+            <option value="united-states">United States</option>
+            <option value="international">International</option>
+            <option value="sports">Sports</option>
+            <option value="politics">Politics</option>
+          </Select>
+          <Badge variant="outline" className="text-xs text-gray-400">
+            Top by Volume
+          </Badge>
+        </div>
       </div>
 
       {error && (

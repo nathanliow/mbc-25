@@ -120,6 +120,12 @@ export const activeTabAtom = atom<string>("tokens");
 export const isSendDrawerOpenAtom = atom<boolean>(false);
 export const isDepositDrawerOpenAtom = atom<boolean>(false);
 export const isTokenDetailOpenAtom = atom<boolean>(false);
+
+// Explorer preference: "orb" or "solscan" (persisted in localStorage)
+export const explorerPreferenceAtom = atomWithStorage<"orb" | "solscan">(
+  "explorerPreference",
+  "orb"
+);
 export const selectedTokenAtom = atom<{
   symbol: string;
   name: string;

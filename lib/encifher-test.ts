@@ -11,7 +11,6 @@
 
 import { Keypair } from "@solana/web3.js";
 import { DefiClient } from "encifher-swap-sdk";
-import { getConnection } from "./solana";
 
 const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL || "https://api.mainnet-beta.solana.com";
 
@@ -23,7 +22,7 @@ export function testSDKImport(): boolean {
   try {
     // Just check if we can reference the SDK
     const clientType = typeof DefiClient;
-    console.log("[Encifher Test] SDK import successful, DefiClient type:", clientType);
+    // console.log("[Encifher Test] SDK import successful, DefiClient type:", clientType);
     return true;
   } catch (error) {
     console.error("[Encifher Test] SDK import failed:", error);
@@ -47,7 +46,7 @@ export function testSDKInitialization(): {
       mode: mode as "Mainnet" | "Devnet",
     });
     
-    console.log("[Encifher Test] SDK client initialized successfully");
+    // console.log("[Encifher Test] SDK client initialized successfully");
     // Don't return the client object to avoid circular references
     return {
       success: true,
@@ -93,10 +92,10 @@ export function testSDKMethods(client: DefiClient): {
     }
   }
 
-  console.log("[Encifher Test] Available methods:", availableMethods);
-  if (missingMethods.length > 0) {
-    console.warn("[Encifher Test] Missing methods:", missingMethods);
-  }
+  // console.log("[Encifher Test] Available methods:", availableMethods);
+  // if (missingMethods.length > 0) {
+  //   console.warn("[Encifher Test] Missing methods:", missingMethods);
+  // }
 
   return {
     methodsExist: missingMethods.length === 0,
@@ -133,7 +132,7 @@ export async function testSDKWithoutAPIKey(keypair: Keypair): Promise<{
       const errorMessage = error?.message || error?.toString() || "Unknown error";
       const errorType = error?.name || "Error";
       
-      console.log("[Encifher Test] Expected error when calling SDK without API key:", errorMessage);
+      // console.log("[Encifher Test] Expected error when calling SDK without API key:", errorMessage);
       return {
         canGetMessageToSign: false,
         error: errorMessage,
@@ -161,7 +160,7 @@ export async function runAllSDKTests(keypair?: Keypair): Promise<{
   methodsTest?: { methodsExist: boolean; availableMethods: string[]; missingMethods: string[] };
   errorHandlingTest?: { canGetMessageToSign: boolean; error?: string; errorType?: string };
 }> {
-  console.log("[Encifher Test] Running all SDK tests...");
+  // console.log("[Encifher Test] Running all SDK tests...");
 
   // Test 1: Import test
   const importTest = testSDKImport();
@@ -192,7 +191,7 @@ export async function runAllSDKTests(keypair?: Keypair): Promise<{
     errorHandlingTest = await testSDKWithoutAPIKey(keypair);
   }
 
-  console.log("[Encifher Test] All tests completed");
+  // console.log("[Encifher Test] All tests completed");
 
   return {
     importTest,

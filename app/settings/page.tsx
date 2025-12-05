@@ -1,11 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useAtom } from "jotai";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
 import { useWallet, truncateAddress } from "@/lib/wallet-context";
 import { ExportDrawer } from "@/components/wallet/export-drawer";
 import { keypairToBase58 } from "@/lib/wallet";
+import { explorerPreferenceAtom } from "@/lib/atoms";
 import { Shield, Key, Bell, Globe, HelpCircle, LogOut, Copy, Check, Lock, ChevronDown, Download } from "lucide-react";
 
 export default function SettingsPage() {
@@ -14,6 +17,7 @@ export default function SettingsPage() {
   const [showWalletSelector, setShowWalletSelector] = useState(false);
   const [exportDrawerOpen, setExportDrawerOpen] = useState(false);
   const [exportType, setExportType] = useState<"mnemonic" | "privateKey" | null>(null);
+  const [explorerPreference, setExplorerPreference] = useAtom(explorerPreferenceAtom);
 
   const copyAddress = () => {
     if (publicKey) {
@@ -181,6 +185,21 @@ const settingsSections = [
                   </div>
                 );
               })}
+              {section.title === "Preferences" && (
+                <div className="flex items-center justify-between py-2 border-b border-border last:border-0">
+                  <span className="text-sm text-gray-400">Transaction Explorer</span>
+                  <div className="flex items-center gap-3">
+                    <span className="text-xs text-gray-500">Orb</span>
+                    <Switch
+                      checked={explorerPreference === "solscan"}
+                      onChange={(e) => {
+                        setExplorerPreference(e.target.checked ? "solscan" : "orb");
+                      }}
+                    />
+                    <span className="text-xs text-gray-500">Solscan</span>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         );

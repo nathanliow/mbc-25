@@ -114,7 +114,7 @@ export async function fetchSplTokensByOwner(
     return all;
   }
 
-  console.log("[Helius] Fetching SPL token accounts for", ownerAddress, "with opts:", opts);
+  // console.log("[Helius] Fetching SPL token accounts for", ownerAddress, "with opts:", opts);
 
   do {
     const body: any = {
@@ -194,7 +194,7 @@ export async function fetchSplTokensByOwner(
       break;
     }
 
-    console.log("[Helius] Received", accountsArray.length, "token accounts in page");
+    // console.log("[Helius] Received", accountsArray.length, "token accounts in page");
 
     for (const item of accountsArray) {
       const info = item.account?.data?.parsed?.info;
@@ -214,7 +214,7 @@ export async function fetchSplTokensByOwner(
 
   } while (paginationKey);
 
-  console.log("[Helius] Total SPL token accounts fetched:", all.length);
+  // console.log("[Helius] Total SPL token accounts fetched:", all.length);
   return all;
 }
 
@@ -238,7 +238,7 @@ export async function fetchTokenPriceData(mint: string): Promise<{
     },
   };
 
-  console.log("[Helius] Fetching price data for mint:", mint);
+  // console.log("[Helius] Fetching price data for mint:", mint);
 
   let data: HeliusGetAssetResponse;
   try {
@@ -273,11 +273,11 @@ export async function fetchTokenPriceData(mint: string): Promise<{
   const adjustedSupply = supply / Math.pow(10, decimals);
   const marketCap = price * adjustedSupply;
 
-  console.log("[Helius] Price data for", mint, {
-    priceUsd: price,
-    adjustedSupply,
-    marketCapUsd: marketCap,
-  });
+  // console.log("[Helius] Price data for", mint, {
+  //   priceUsd: price,
+  //   adjustedSupply,
+  //   marketCapUsd: marketCap,
+  // });
 
   return {
     priceUsd: price,
@@ -291,7 +291,7 @@ export async function fetchAssetBatch(ids: string[]): Promise<HeliusAsset[]> {
     return [];
   }
 
-  console.log("[Helius] Fetching asset batch for ids:", ids);
+  // console.log("[Helius] Fetching asset batch for ids:", ids);
 
   const body = {
     jsonrpc: "2.0",
@@ -317,7 +317,7 @@ export async function fetchAssetBatch(ids: string[]): Promise<HeliusAsset[]> {
     const data = (await res.json()) as HeliusGetAssetBatchResponse;
     const result = data.result ?? [];
 
-    console.log("[Helius] getAssetBatch returned", result.length, "assets");
+    // console.log("[Helius] getAssetBatch returned", result.length, "assets");
     return result;
   } catch (e) {
     console.error("[Helius] Network/parse error in getAssetBatch:", e);
@@ -331,7 +331,7 @@ export async function fetchAsset(id: string): Promise<HeliusAsset | null> {
     return null;
   }
 
-  console.log("[Helius] Fetching asset for id:", id);
+  // console.log("[Helius] Fetching asset for id:", id);
 
   const body = {
     jsonrpc: "2.0",
@@ -360,7 +360,7 @@ export async function fetchAsset(id: string): Promise<HeliusAsset | null> {
     const data = (await res.json()) as { result?: HeliusAsset };
     const result = data.result ?? null;
 
-    console.log("[Helius] getAsset returned asset:", result ? "found" : "not found");
+    // console.log("[Helius] getAsset returned asset:", result ? "found" : "not found");
     return result;
   } catch (e) {
     console.error("[Helius] Network/parse error in getAsset:", e);
@@ -445,12 +445,12 @@ export async function fetchSignaturesForAddress(
   };
 
   try {
-    console.log(
-      "[Helius] Fetching signatures for address",
-      address,
-      "limit",
-      cappedLimit
-    );
+    // console.log(
+    //   "[Helius] Fetching signatures for address",
+    //   address,
+    //   "limit",
+    //   cappedLimit
+    // );
     const res = await fetch(HELIUS_RPC_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -468,11 +468,11 @@ export async function fetchSignaturesForAddress(
 
     const data = (await res.json()) as HeliusGetSignaturesResponse;
     const result = data.result ?? [];
-    console.log(
-      "[Helius] getSignaturesForAddress returned",
-      result.length,
-      "signatures"
-    );
+    // console.log(
+    //   "[Helius] getSignaturesForAddress returned",
+    //   result.length,
+    //   "signatures"
+    // );
     return result;
   } catch (e) {
     console.error("[Helius] Network/parse error in getSignaturesForAddress:", e);
@@ -511,7 +511,7 @@ export async function fetchTransaction(
   };
 
   try {
-    console.log("[Helius] Fetching transaction for signature", signature);
+    // console.log("[Helius] Fetching transaction for signature", signature);
     const res = await fetch(HELIUS_RPC_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -529,7 +529,7 @@ export async function fetchTransaction(
 
     const data = (await res.json()) as HeliusGetTransactionResponse;
     const result = data.result ?? null;
-    console.log("[Helius] getTransaction result for", signature, ":", result);
+    // console.log("[Helius] getTransaction result for", signature, ":", result);
     return result;
   } catch (e) {
     console.error("[Helius] Network/parse error in getTransaction:", e);
@@ -557,7 +557,7 @@ export async function fetchTransactionsBatch(
 
   const results = new Map<string, HeliusTransactionResult | null>();
 
-  console.log(`[Helius] Fetching ${signatures.length} transactions individually with ${delayBetweenCalls}ms delay`);
+  // console.log(`[Helius] Fetching ${signatures.length} transactions individually with ${delayBetweenCalls}ms delay`);
 
   // Fetch each transaction individually with delay
   for (let i = 0; i < signatures.length; i++) {
@@ -606,7 +606,7 @@ export async function fetchTransactionsBatch(
     }
   }
 
-  console.log(`[Helius] Completed fetching ${results.size} transactions`);
+  // console.log(`[Helius] Completed fetching ${results.size} transactions`);
   return results;
 }
 
