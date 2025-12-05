@@ -3,6 +3,9 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/header";
 import { BottomNav } from "@/components/layout/bottom-nav";
+import { WalletProvider } from "@/lib/wallet-context";
+import { WalletGuard } from "@/components/wallet/wallet-guard";
+import { Provider as JotaiProvider } from "jotai";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,6 +32,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >
+        <JotaiProvider>
+          <WalletProvider>
+            <WalletGuard>
         <div className="flex min-h-screen flex-col">
           <Header />
           <main className="flex-1 pb-20">
@@ -36,6 +42,9 @@ export default function RootLayout({
           </main>
           <BottomNav />
         </div>
+            </WalletGuard>
+          </WalletProvider>
+        </JotaiProvider>
       </body>
     </html>
   );

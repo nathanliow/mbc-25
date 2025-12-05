@@ -30,7 +30,7 @@ export function Drawer({ isOpen, onClose, title, children }: DrawerProps) {
           isOpen ? "translate-y-0" : "translate-y-full"
         )}
       >
-        <div className="max-h-[80vh] overflow-y-auto">
+        <div className="max-h-[85vh] overflow-y-auto">
           {title && (
             <div className="flex items-center justify-between p-4 border-b border-border">
               <h2 className="text-lg font-semibold">{title}</h2>
