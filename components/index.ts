@@ -33,3 +33,5 @@ export * from "./wallet/transaction-item";
 export * from "./wallet/wallet-guard";
 export * from "./wallet/wallet-setup";
 export * from "./wallet/wallet-unlock";
+
+export * from "./markets/market-detail-drawer";

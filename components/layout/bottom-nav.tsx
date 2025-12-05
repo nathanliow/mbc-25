@@ -2,12 +2,19 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Wallet, ArrowLeftRight, Settings, Network } from "lucide-react";
+import { 
+  Wallet, 
+  ArrowLeftRight, 
+  Settings,
+  Network, 
+  TrendingUp 
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/wallet", icon: Wallet, label: "Wallet" },
   { href: "/swap", icon: ArrowLeftRight, label: "Swap" },
+  { href: "/markets", icon: TrendingUp, label: "Markets" },
   { href: "/bridge", icon: Network, label: "Bridge" },
   { href: "/settings", icon: Settings, label: "Settings" },
 ];
