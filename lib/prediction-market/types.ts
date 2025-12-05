@@ -85,6 +85,34 @@ export interface PredictionMarketDbRecord {
   additionalData?: any; // JSONB object
 }
 
+export function mapEventToDb(event: PredictionMarketEventSchema & { _markets?: any[] }): PredictionMarketDbRecord {
+  // Extract markets from _markets field if present (set by transformer functions)
+  const markets = (event as any)._markets || [];
+  
+  return {
+    id: event.id,
+    provider: event.provider,
+    title: event.title,
+    subtitle: event.subtitle,
+    description: event.description,
+    image: event.imageUrl,
+    category: event.category,
+    series: event.series,
+    tags: event.tags || [],
+    startDate: event.startDate,
+    endDate: event.endDate,
+    active: event.active,
+    featured: event.featured,
+    volume: event.volume,
+    liquidity: event.liquidity,
+    location: event.location,
+    markets: markets,
+    createdAt: event.createdAt,
+    updatedAt: event.updatedAt,
+    additionalData: {},
+  };
+}
+
 export function mapDbToEvent(db: PredictionMarketDbRecord): PredictionMarketEventSchema {
   // Map markets JSONB array to outcomes
   let outcomes: PredictionMarketOutcome[] | undefined;

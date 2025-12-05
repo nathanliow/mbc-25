@@ -1,36 +1,51 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ShadeWallet
+
+A privacy-enhanced Solana wallet with support for public and private transactions, token swaps, and prediction markets.
+
+## Features
+
+- **Wallet Management**: HD wallet generation, multiple derived accounts, password-protected locking
+- **Privacy Transactions**: Shield/unshield funds using Encifher SDK for private transactions
+- **Token Swaps**: Public swaps via Jupiter Aggregator and private swaps via Encifher (which uses Jupiter internally)
+- **Activity History**: Transaction history and activity feed powered by Helius APIs
+- **Price Charts**: Token price history and OHLCV data from Moralis APIs
+- **Prediction Markets**: Browse and view prediction markets with outcome probabilities
+
+## Tech Stack
+
+- **Frontend**: Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS
+- **State Management**: Jotai with localStorage persistence
+- **Blockchain**: Solana Web3.js, Encifher Swap SDK
+- **Data Providers**: Helius (balances, transactions), Moralis (price charts), Jupiter (swaps, prices), Supabase (prediction markets)
 
 ## Getting Started
 
-First, run the development server:
+1. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+2. Set up environment variables (see `.env.example`):
+   - `NEXT_PUBLIC_RPC_URL` - Solana RPC endpoint (Helius recommended)
+   - `NEXT_PUBLIC_ENCIFHER_API_KEY` - Encifher API key for private transactions
+   - `JUPITER_API_KEY` - Jupiter API key for swaps
+   - `NEXT_PUBLIC_MORALIS_API_KEY` - Moralis API key for price charts
+   - `NEXT_PUBLIC_SUPABASE_URL` - Supabase project URL
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Supabase anonymous key
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+3. Run the development server:
+   ```bash
+   npm run dev
+   ```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Architecture
 
-## Learn More
+For detailed technical documentation, see [ARCHITECTURE.md](./ARCHITECTURE.md).
 
-To learn more about Next.js, take a look at the following resources:
+## Project Structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `app/` - Next.js pages and API routes
+- `components/` - React components (wallet, swap, markets, UI)
+- `lib/` - Core libraries (wallet context, Encifher, Helius, Moralis, Jupiter)

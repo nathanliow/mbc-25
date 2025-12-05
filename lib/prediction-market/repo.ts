@@ -5,7 +5,14 @@ import {
   PredictionMarketEventListOptions,
   PredictionMarketDbRecord,
   mapDbToEvent,
+  mapEventToDb,
 } from "./types";
+
+export interface PredictionMarketEventUpsertResult {
+  created: number;
+  updated: number;
+  errors: Array<{ id: string; error: string }>;
+}
 
 export class PredictionMarketRepo {
   constructor(private supabase: SupabaseClient) {}
@@ -214,6 +221,107 @@ export class PredictionMarketRepo {
     }
 
     return count ?? 0;
+  }
+
+  /**
+   * Upsert multiple events to database with replacement strategy
+   */
+  async upsertEvents(
+    events: (PredictionMarketEventSchema & { _markets?: any[] })[]
+  ): Promise<PredictionMarketEventUpsertResult> {
+    const result: PredictionMarketEventUpsertResult = {
+      created: 0,
+      updated: 0,
+      errors: [],
+    };
+
+    if (events.length === 0) {
+      return result;
+    }
+
+    try {
+      const dbEvents = events.map(event => mapEventToDb(event));
+      
+      // Use Supabase's native bulk upsert functionality with timeout handling
+      const timeoutPromise = new Promise((_, reject) => {
+        setTimeout(() => reject(new Error('Upsert operation timed out')), 30000); // 30 second timeout
+      });
+      
+      const upsertPromise = this.supabase
+        .from('prediction_market_events')
+        .upsert(dbEvents, { 
+          onConflict: 'id,provider',
+          ignoreDuplicates: false 
+        });
+
+      const { error } = await Promise.race([upsertPromise, timeoutPromise]) as any;
+
+      if (error) {
+        console.error('[PredictionMarketRepo] Bulk upsert error:', error);
+        // If bulk upsert fails, fall back to individual upserts
+        return await this.upsertEventsFallback(events);
+      }
+
+      // Supabase doesn't distinguish created vs updated in upsert
+      // Treat the whole batch as updated for accounting purposes
+      result.updated = events.length;
+      
+    } catch (error) {
+      console.error('[PredictionMarketRepo] Bulk upsert failed, falling back to individual upserts:', error);
+      return await this.upsertEventsFallback(events);
+    }
+
+    return result;
+  }
+
+  private async upsertEventsFallback(
+    events: PredictionMarketEventSchema[]
+  ): Promise<PredictionMarketEventUpsertResult> {
+    const result: PredictionMarketEventUpsertResult = {
+      created: 0,
+      updated: 0,
+      errors: [],
+    };
+
+    for (const event of events) {
+      try {
+        const dbEvent = mapEventToDb(event);
+        
+        // Check if event exists
+        const { data: existing } = await this.supabase
+          .from('prediction_market_events')
+          .select('id')
+          .eq('id', event.id)
+          .eq('provider', event.provider)
+          .single();
+
+        if (existing) {
+          // Update existing
+          const { error } = await this.supabase
+            .from('prediction_market_events')
+            .update(dbEvent)
+            .eq('id', event.id)
+            .eq('provider', event.provider);
+
+          if (error) throw error;
+          result.updated++;
+        } else {
+          // Insert new
+          const { error } = await this.supabase
+            .from('prediction_market_events')
+            .insert(dbEvent);
+
+          if (error) throw error;
+          result.created++;
+        }
+      } catch (error) {
+        const errorMsg = error instanceof Error ? error.message : 'Unknown error';
+        result.errors.push({ id: event.id, error: errorMsg });
+        console.error(`[PredictionMarketRepo] Failed to upsert event ${event.id}:`, errorMsg);
+      }
+    }
+
+    return result;
   }
 }
 
