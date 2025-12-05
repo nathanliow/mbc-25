@@ -30,16 +30,50 @@ export async function POST(request: NextRequest) {
       mode: mode as "Mainnet" | "Devnet",
     });
 
-    const result = await client.sendSignedAnonTransferParams({
-      extendedAnonTransferParams,
-      signature,
+    console.log("[Encifher API] Calling sendSignedAnonTransferParams with:", {
+      rpcUrl: RPC_URL,
+      hasParams: !!extendedAnonTransferParams,
+      hasSignature: !!signature,
+      paramsKeys: extendedAnonTransferParams ? Object.keys(extendedAnonTransferParams) : [],
     });
+
+    let result;
+    try {
+      result = await client.sendSignedAnonTransferParams({
+        extendedAnonTransferParams,
+        signature,
+      });
+    } catch (sdkError: any) {
+      console.error("[Encifher API] SDK error - Full details:", {
+        message: sdkError.message,
+        name: sdkError.name,
+        stack: sdkError.stack,
+        cause: sdkError.cause,
+        toString: sdkError.toString(),
+        // Check for nested errors
+        ...(sdkError.error && { nestedError: sdkError.error }),
+        ...(sdkError.response && { response: sdkError.response }),
+        ...(sdkError.data && { data: sdkError.data }),
+      });
+      throw sdkError;
+    }
 
     return NextResponse.json(result);
   } catch (error: any) {
     console.error("[Encifher API] Failed to send anon transfer:", error);
+    console.error("[Encifher API] Error type:", typeof error);
+    console.error("[Encifher API] Error constructor:", error?.constructor?.name);
+    
+    // Try to extract more details
+    let errorMessage = error.message || "Failed to send anon transfer";
+    
+    // If the error message mentions deposit transaction, provide more context
+    if (errorMessage.includes("deposit transaction") || errorMessage.includes("construct deposit")) {
+      errorMessage = `Failed to construct deposit transaction. The SDK is trying to automatically deposit funds but cannot construct the transaction. This may be due to: (1) RPC connection issues, (2) Insufficient public balance for fees, or (3) SDK configuration problems. Original error: ${error.message}`;
+    }
+    
     return NextResponse.json(
-      { error: error.message || "Failed to send anon transfer" },
+      { error: errorMessage },
       { status: 500 }
     );
   }

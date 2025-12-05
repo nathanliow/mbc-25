@@ -10,6 +10,7 @@ import {
 import { DefiClient } from "encifher-swap-sdk";
 import { getConnection } from "./solana";
 import { SOL_MINT, USDC_MINT, USDT_MINT } from "./const";
+import bs58 from "bs58";
 
 const RPC_URL = process.env.NEXT_PUBLIC_RPC_URL || "https://api.mainnet-beta.solana.com";
 const ENCIFHER_API_KEY = process.env.NEXT_PUBLIC_ENCIFHER_API_KEY || "";
@@ -363,7 +364,7 @@ export async function sendPrivate(
     const messageHash = Buffer.from(anonTransferMsg.msgHash);
     const nacl = await import("tweetnacl");
     const sigBuff = nacl.sign.detached(messageHash, keypair.secretKey);
-    const signatureString = Buffer.from(sigBuff).toString("base64");
+    const signatureString = bs58.encode(sigBuff);
     
     // Send signed anon transfer via API route
     const sendResponse = await fetch("/api/encifher/send-anon-transfer", {
