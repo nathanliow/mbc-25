@@ -23,10 +23,10 @@
     "encifher-swap-sdk": "^1.1.0",
     "jotai": "^2.15.2",
     "lucide-react": "^0.555.0",
-    "next": "16.0.6",
+    "next": "16.0.7",
     "qrcode": "^1.5.4",
-    "react": "19.2.0",
-    "react-dom": "19.2.0",
+    "react": "19.2.1",
+    "react-dom": "19.2.1",
     "recharts": "^3.5.1",
     "tailwind-merge": "^3.4.0",
     "viem": "^2.41.2"
@@ -37,7 +37,7 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.0.6",
+    "eslint-config-next": "16.0.7",
     "tailwindcss": "^4",
     "typescript": "^5"
   }
